@@ -1,0 +1,378 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Servo.h>
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+Servo servo1;
+
+#define botao_terr 8
+#define botao_1 9
+#define botao_2 10
+#define botao_3 11
+
+int t_andar_subida = 1680;
+int t_andar_descida = 1250;
+int andar = 0;
+
+int lcdpisca = 0;
+
+void setup() {
+
+  lcd.init();
+
+  lcd.backlight();
+
+  Serial.begin(9600);
+  servo1.attach(12);
+  pinMode(botao_terr, INPUT);
+  pinMode(botao_1, INPUT);
+  pinMode(botao_2, INPUT);
+  pinMode(botao_3, INPUT);
+
+  lcd.print("Configuracao...");
+
+  while (true) {
+    if (digitalRead(botao_terr) == HIGH) {
+      Serial.println("anti-horario sentidooooooooooooo");
+      servo1.write(120);
+    } else if (digitalRead(botao_1) == HIGH) {
+      Serial.println("horario sentidooooooooooooo");
+      servo1.write(60);
+    } else if (digitalRead(botao_2) == HIGH) {
+      Serial.println("fim configuração");
+      lcd.clear();
+      lcd.print("Fim configuracao");
+      delay(1600);
+      break;
+    } else {
+      Serial.println("Configuração.....");
+      servo1.write(90);
+    }
+    delay(10);
+  }
+}
+
+void loop() {
+
+  //lcd.clear();
+
+  if( 1 == 0) {
+
+    configuracao:
+    lcd.clear();
+    lcd.print("Configuracao...");
+
+    while (digitalRead(botao_terr) == HIGH or digitalRead(botao_3) == HIGH) {
+      delay(10);
+    }
+
+    while (true) {
+      if (digitalRead(botao_terr) == HIGH) {
+        Serial.println("anti-horario sentidooooooooooooo");
+        servo1.write(120);
+      } else if (digitalRead(botao_1) == HIGH) {
+        Serial.println("horario sentidooooooooooooo");
+        servo1.write(60);
+      } else if (digitalRead(botao_2) == HIGH) {
+        Serial.println("fim configuração");
+        lcd.clear();
+        lcd.print("Fim configuracao");
+        lcdpisca = 0;
+        delay(1600);
+        break;
+      } else {
+        Serial.println("Configuração.....");
+        servo1.write(90);
+      }
+      delay(10);
+    }
+    andar = 0;
+  }
+
+  if (andar == 0) {
+
+    if (digitalRead(botao_terr) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_3) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (digitalRead(botao_3) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_terr) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (lcdpisca == 0) {
+      lcd.clear();
+      lcd.print("Andar atual: T");
+      lcdpisca = 1;
+    }
+
+    Serial.println("Andar atual: T");
+    //lcd.print("Andar atual: T");
+
+    if (digitalRead(botao_1) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo para andar 1");
+
+      lcd.print("Subindo andar 1");
+      lcd.setCursor(1, 0);
+      servo1.write(120);
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 1;
+
+      lcdpisca = 0;
+
+    } else if (digitalRead(botao_2) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo p andar 2");
+
+      lcd.print("Subindo andar 2");
+      servo1.write(120);
+      delay(t_andar_subida);
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 2;
+
+      lcdpisca = 0;
+
+    } else if (digitalRead(botao_3) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo p andar 3");
+
+      lcd.print("Subindo andar 3");
+      servo1.write(120);
+      delay(t_andar_subida);
+
+      delay(t_andar_subida);
+
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 3;
+
+      lcdpisca = 0;
+
+    }
+  }
+
+  if (andar == 1) {
+
+    if (digitalRead(botao_terr) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_3) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (digitalRead(botao_3) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_terr) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (lcdpisca == 0) {
+      lcd.clear();
+      lcd.print("Andar atual: 1");
+      lcdpisca = 1;
+    }
+
+    Serial.println("Andar atual: 1");
+    //lcd.print("Andar atual: 1");
+
+    if (digitalRead(botao_terr) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar T");
+
+      lcd.print("Descendo andar T");
+
+      servo1.write(60);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 0;
+
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_2) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo p andar 2");
+
+      lcd.print("Subindo andar 2");
+      servo1.write(120);
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 2;
+      
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_3) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo p andar 3");
+      
+      lcd.print("Subindo andar 3");
+      servo1.write(120);
+      delay(t_andar_subida);
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 3;
+
+      lcdpisca = 0;
+
+    }
+  }
+
+  if (andar == 2) {
+
+    if (digitalRead(botao_terr) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_3) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (digitalRead(botao_3) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_terr) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (lcdpisca == 0) {
+      lcd.clear();
+      lcd.print("Andar atual: 2");
+      lcdpisca = 1;
+    }
+
+    Serial.println("Andar atual: 2");
+    //lcd.print ("Andar atual: 2");
+
+    if (digitalRead(botao_terr) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar T");
+
+      lcd.print("Descendo andar T");
+      servo1.write(60);
+      delay(t_andar_descida);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 0;
+
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_1) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar 1");
+
+      lcd.print("Descendo andar 1");
+      servo1.write(60);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 1;
+
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_3) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Subindo p andar 3");
+
+      lcd.print("Subindo andar 3");
+      servo1.write(120);
+      delay(t_andar_subida);
+      servo1.write(90);
+      andar = 3;
+
+      lcdpisca = 0;
+
+    }
+  }
+
+  if (andar == 3) {
+
+    if (digitalRead(botao_terr) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_3) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (digitalRead(botao_3) == HIGH) {
+      delay(50);
+      if (digitalRead(botao_terr) == HIGH) {
+        goto configuracao;
+      }
+    }
+
+    if (lcdpisca == 0) {
+      lcd.clear();
+      lcd.print("Andar atual: 3");
+      lcdpisca = 1;
+    }
+
+    Serial.println("Andar atual: 3");
+    //lcd.print("Andar atual: 3");
+
+    if (digitalRead(botao_terr) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar T");
+
+      lcd.print("Descendo andar T");
+      servo1.write(60);
+      delay(t_andar_descida);
+      delay(t_andar_descida);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 0;
+
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_1) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar 1");
+
+      lcd.print("Descendo andar 1");
+      servo1.write(60);
+      delay(t_andar_descida);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 1;
+
+      lcdpisca = 0;
+
+    }
+    if (digitalRead(botao_2) == HIGH) {
+
+      lcd.clear();
+      Serial.println("Descendo p andar 2");
+
+      lcd.print("Descendo andar 2");
+      servo1.write(60);
+      delay(t_andar_descida);
+      servo1.write(90);
+      andar = 2;
+
+      lcdpisca = 0;
+
+    }
+  }
+  delay(50);
+}
